@@ -5,6 +5,30 @@ local function isFile(path)
     return info and info.type == "file"
 end
 
+local paths = {
+    cache = {},
+    fonts = {}
+}
+
+function paths.clearCache()
+    for p, o in pairs(paths.cache) do
+        if not paths.isPersistant(p) then
+            if o.type == "image" then
+                o.object:release()
+            elseif o.type == "source" then
+                o.object:stop()
+            elseif o.type == "frames" then
+                o.object.texture:release()
+                for _, f in pairs(o.object.frames) do
+                    f.quad:release()
+                end
+            end
+        end
+    end
+    paths.cache = {}
+    collectgarbage()
+end
+
 function paths.getPath(key) return "assets/" .. key end
 
 function paths.getText(key)
