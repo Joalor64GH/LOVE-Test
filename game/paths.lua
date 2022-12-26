@@ -1,4 +1,5 @@
 local audio = require "lib.wave"
+local decodeJson = (require "lib.json").decode
 
 local function isFile(path)
     local info = love.filesystem.getInfo(path)
@@ -7,8 +8,16 @@ end
 
 local paths = {
     cache = {},
-    fonts = {}
+    fonts = {},
+    persistantAssets = {"music/music.txt"}
 }
+
+function paths.isPersistant(path)
+    for _, k in ipairs(paths.persistantAssets) do
+        if util.endsWith(path, k) then return true end
+    end
+    return false
+end
 
 function paths.clearCache()
     for p, o in pairs(paths.cache) do
@@ -38,7 +47,6 @@ function paths.getText(key)
     end
     return nil
 end
-
 function paths.getFont(key, size)
     if size == nil then size = 12 end
 
